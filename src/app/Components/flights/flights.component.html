@@ -1,0 +1,107 @@
+<div *ngIf="userRole === 'operator2'">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>{{ isEditing ? 'Update Flight' : 'Add Flight' }}</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <form (ngSubmit)="saveFlight()" #flightForm="ngForm">
+        <mat-form-field>
+          <input matInput placeholder="Destination From" [(ngModel)]="destination_from" name="destination_from" required>
+          <mat-error *ngIf="formSubmitted && flightForm.controls['destination_from'].hasError('required')">
+            Destination From is required.
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field>
+          <input matInput placeholder="Destination To" [(ngModel)]="destination_to" name="destination_to" required>
+          <mat-error *ngIf="formSubmitted && flightForm.controls['destination_to'].hasError('required')">
+            Destination To is required.
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field>
+          <input matInput [matDatepicker]="departureDatepicker" placeholder="Departure Date" [(ngModel)]="departure_date" name="departure_date" required>
+          <mat-datepicker-toggle matSuffix [for]="departureDatepicker"></mat-datepicker-toggle>
+          <mat-datepicker #departureDatepicker></mat-datepicker>
+          <mat-error *ngIf="formSubmitted && flightForm.controls['departure_date'].hasError('required')">
+            Departure Date is required.
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field>
+          <input matInput [ngxTimepicker]="departureTimepicker" placeholder="Departure Time" [(ngModel)]="departure_time" name="departure_time" required readonly>
+          <mat-error *ngIf="formSubmitted && flightForm.controls['departure_time'].hasError('required')">
+            Departure Time is required.
+          </mat-error>
+          <ngx-material-timepicker #departureTimepicker (timeSet)="onTimeSet($event, 'departure')"></ngx-material-timepicker>
+        </mat-form-field>
+
+        <mat-form-field>
+          <input matInput [matDatepicker]="arrivalDatepicker" placeholder="Arrival Date" [(ngModel)]="arrival_date" name="arrival_date" required>
+          <mat-datepicker-toggle matSuffix [for]="arrivalDatepicker"></mat-datepicker-toggle>
+          <mat-datepicker #arrivalDatepicker></mat-datepicker>
+          <mat-error *ngIf="formSubmitted && flightForm.controls['arrival_date'].hasError('required')">
+            Arrival Date is required.
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field>
+          <input matInput [ngxTimepicker]="arrivalTimepicker" placeholder="Arrival Time" [(ngModel)]="arrival_time" name="arrival_time" required readonly>
+          <mat-error *ngIf="formSubmitted && flightForm.controls['arrival_time'].hasError('required')">
+            Arrival Time is required.
+          </mat-error>
+          <ngx-material-timepicker #arrivalTimepicker (timeSet)="onTimeSet($event, 'arrival')"></ngx-material-timepicker>
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>Airplane</mat-label>
+          <mat-select [(ngModel)]="airplane_id" name="airplane_id" required>
+            <mat-option *ngFor="let airplane of airplanes" [value]="airplane.id">{{ airplane.name_en }}</mat-option>
+          </mat-select>
+          <mat-error *ngIf="formSubmitted && flightForm.controls['airplane_id'].hasError('required')">
+            Airplane is required.
+          </mat-error>
+        </mat-form-field>
+<button mat-raised-button type="submit" [disabled]="isLoading">
+    <mat-spinner *ngIf="isLoading" diameter="24"></mat-spinner>
+    {{ isEditing ? 'Update' : 'Add' }} Flight
+  </button>
+        <button *ngIf="isEditing" mat-raised-button type="button" (click)="resetForm()">Cancel</button>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>
+
+<!-- Flight Table -->
+<mat-table [dataSource]="flights">
+  <!-- Column Definitions -->
+  <ng-container *ngFor="let column of displayedColumns" [matColumnDef]="column">
+    <th mat-header-cell *matHeaderCellDef>{{ column }}</th>
+    <td mat-cell *matCellDef="let element">
+      <ng-container *ngIf="column === 'departure_datetime' || column === 'arrival_datetime'">
+        {{ formatDateAndTime(element.departure_datetime, element.arrival_datetime) }}
+      </ng-container>
+      
+      <!-- For the "airplane" column, display the airplaneName property -->
+      <ng-container *ngIf="column === 'airplane'">
+        {{ element.airplaneName }}
+      </ng-container>
+      
+      <!-- For other columns, display the respective property -->
+      <ng-container *ngIf="column !== 'departure_datetime' && column !== 'arrival_datetime' && column !== 'airplane' && column !== 'actions' && userRole === 'operator2'">
+        {{ element[column] }}
+      </ng-container>
+      
+      <ng-container *ngIf="column === 'actions' && userRole === 'operator2'">
+        <button mat-button color="primary" (click)="editFlight(element)">Edit</button>
+        <button mat-button color="warn" (click)="deleteFlight(element.id)">Delete</button>
+        <button mat-button color="accent" (click)="openFlightDetails(element)">Details</button>
+      </ng-container>
+    </td>
+  </ng-container>
+
+  <!-- Table Rows -->
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+</mat-table>
+

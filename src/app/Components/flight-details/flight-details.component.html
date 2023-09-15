@@ -1,0 +1,59 @@
+<div>
+  <h2>Flight Details</h2>
+  <table>
+    <tr>
+      <th>Property</th>
+      <th>Value</th>
+    </tr>
+    <tr>
+      <td>From</td>
+      <td>{{ flight.destination_from }}</td>
+    </tr>
+    <tr>
+      <td>To</td>
+      <td>{{ flight.destination_to }}</td>
+    </tr>
+  </table>
+
+  <button mat-button (click)="openPassengerDialog(null)">Add Passenger</button>
+
+  <!-- Dropdown to select a passenger to add -->
+  <mat-form-field>
+    <mat-label>Select a Passenger</mat-label>
+    <mat-select [(ngModel)]="selectedPassengerId" placeholder="Select a passenger">
+      <mat-option *ngFor="let passenger of availablePassengers" [value]="passenger.id">
+        {{ passenger.first_name }} {{ passenger.last_name }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <button mat-button (click)="addPassengerToFlight()">Add Selected Passenger</button>
+
+  <!-- Display success message -->
+  <div *ngIf="successMessage" class="success-message">{{ successMessage }}</div>
+
+  <!-- Display error message -->
+  <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
+
+  <!-- Display passengers associated with the flight -->
+  <div *ngIf="passengers && passengers.length > 0">
+    <h3>Passengers</h3>
+    <table>
+      <tr>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>Actions</th>
+      </tr>
+      <tr *ngFor="let passenger of passengers">
+        <td>{{ passenger.first_name }}</td>
+        <td>{{ passenger.last_name }}</td>
+        <td>
+          <button mat-icon-button (click)="openPassengerDialog(passenger)">edit</button>
+        </td>
+      </tr>
+    </table>
+  </div>
+  <div *ngIf="passengers && passengers.length === 0">
+    <p>No passengers found for this flight.</p>
+  </div>
+</div>

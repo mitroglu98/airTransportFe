@@ -1,0 +1,79 @@
+<div fxLayout="column" fxLayoutAlign="center center">
+
+  <mat-card  *ngIf="currentUserRole === 'operator2'">
+    <mat-card-header>
+      <mat-card-title>{{ isEditing ? 'Update Airplane' : 'Add Airplane' }}</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <form (ngSubmit)="onSubmit(airplaneForm)" #airplaneForm="ngForm">
+
+        <mat-form-field appearance="fill">
+          <mat-label>Airplane Name [EN]</mat-label>
+          <input matInput type="text" [(ngModel)]="airplaneData.name_en" name="name_en" required>
+        </mat-form-field>
+        
+        <mat-form-field appearance="fill">
+          <mat-label>Naziv [CG]</mat-label>
+          <input matInput type="text" [(ngModel)]="airplaneData.name_cg" name="name_cg" required>
+        </mat-form-field>
+        
+        <mat-form-field appearance="fill">
+          <mat-label>Airplane Type</mat-label>
+          <mat-select [(ngModel)]="airplaneData.type" name="type" required>
+            <mat-option value="Cargo">Cargo</mat-option>
+            <mat-option value="Passenger">Passenger</mat-option>
+            <mat-option value="Military">Military</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <button mat-raised-button type="submit">{{ isEditing ? 'Update' : 'Add' }}</button>
+        <button mat-raised-button type="button" *ngIf="isEditing" (click)="resetForm()">Cancel</button>
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Table for listing airplanes -->
+  <mat-card class="mt-3">
+    <mat-card-content>
+      <table mat-table [dataSource]="airplanes" class="mat-elevation-z8">
+
+        <!-- Name EN Column -->
+        <ng-container matColumnDef="name_en">
+          <th mat-header-cell *matHeaderCellDef> Name [EN] </th>
+          <td mat-cell *matCellDef="let airplane"> {{airplane.name_en}} </td>
+        </ng-container>
+
+        <!-- Name CG Column -->
+        <ng-container matColumnDef="name_cg">
+          <th mat-header-cell *matHeaderCellDef> Naziv [CG] </th>
+          <td mat-cell *matCellDef="let airplane"> {{airplane.name_cg}} </td>
+        </ng-container>
+
+        <!-- Type Column -->
+        <ng-container matColumnDef="type">
+          <th mat-header-cell *matHeaderCellDef> Type </th>
+          <td mat-cell *matCellDef="let airplane"> {{airplane.type}} </td>
+        </ng-container>
+
+        <!-- Actions Column -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>
+              <div *ngIf="currentUserRole === 'operator2'">Actions</div>
+          </th>
+          <td mat-cell *matCellDef="let airplane">
+              <div *ngIf="currentUserRole === 'operator2'">
+                  <button mat-button (click)="editAirplane(airplane.id)">Edit</button>
+                  <button mat-button (click)="deleteAirplane(airplane.id)">Delete</button>
+              </div>
+          </td>
+      </ng-container>
+      
+        <!-- Table Header & Rows -->
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        
+      </table>
+    </mat-card-content>
+  </mat-card>
+
+</div>

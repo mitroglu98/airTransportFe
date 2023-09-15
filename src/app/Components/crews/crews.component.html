@@ -1,0 +1,63 @@
+<mat-card *ngIf="userRole==='operator2'">
+    <mat-card-header>
+      <mat-card-title>{{ isEditing ? 'Update Crew Member' : 'Add Crew Member' }}</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <form (ngSubmit)="saveCrew()">
+        <mat-form-field>
+          <input matInput placeholder="First Name" [(ngModel)]="firstName" name="firstName" required>
+        </mat-form-field>
+  
+        <mat-form-field>
+          <input matInput placeholder="Last Name" [(ngModel)]="lastName" name="lastName" required>
+        </mat-form-field>
+  
+        <mat-form-field>
+          <input matInput placeholder="Position" [(ngModel)]="position" name="position" required>
+        </mat-form-field>
+  
+        <button mat-raised-button type="submit" [disabled]="isLoading">
+          <mat-spinner *ngIf="isLoading" diameter="24"></mat-spinner>
+          {{ isEditing ? 'Update' : 'Add' }} Crew Member
+        </button>
+        <button *ngIf="isEditing" mat-raised-button type="button" (click)="resetForm()">Cancel</button>
+      </form>
+    </mat-card-content>
+  </mat-card>
+  
+  <mat-card>
+    <mat-card-content>
+      <mat-table [dataSource]="crews">
+  
+        <!-- Columns -->
+        <ng-container matColumnDef="firstName">
+          <th mat-header-cell *matHeaderCellDef>First Name</th>
+          <td mat-cell *matCellDef="let crew">{{ crew.first_name }}</td>
+        </ng-container>
+  
+        <ng-container matColumnDef="lastName">
+          <th mat-header-cell *matHeaderCellDef>Last Name</th>
+          <td mat-cell *matCellDef="let crew">{{ crew.last_name }}</td>
+        </ng-container>
+  
+        <ng-container matColumnDef="position">
+          <th mat-header-cell *matHeaderCellDef>Position</th>
+          <td mat-cell *matCellDef="let crew">{{ crew.position }}</td>
+        </ng-container>
+  
+        <ng-container matColumnDef="actions" *ngIf="userRole === 'operator2'">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <td mat-cell *matCellDef="let crew">
+            <button mat-button (click)="editCrew(crew)">Edit</button>
+            <button mat-button (click)="deleteCrew(crew.id)">Delete</button>
+          </td>
+        </ng-container>
+  
+        <!-- Table Header & Rows -->
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  
+      </mat-table>
+    </mat-card-content>
+  </mat-card>
+  
